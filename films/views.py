@@ -1,7 +1,7 @@
 from dal import autocomplete
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.decorators import user_passes_test
-from .models import Country, Film, Genre, Person
+from .models import Country, Film, Genre, Person, Post, Section
 from .forms import CountryForm, GenreForm, FilmForm, PersonForm
 from .helpers import paginate
 from django.contrib import messages
@@ -229,6 +229,14 @@ def person_delete(request, id):
     return render(request, 'films/person/delete.html',
                   {'person': person})
 
+def post_list(request):
+    posts = Post.objects.all()
+    query = request.GET.get('query', '')
+    if query:
+        posts = posts.filter(title__icontains=query)
+    posts = paginate(request, posts)
+    return render(request, 'films/post/list.html', {'posts': posts,
+                                                      'query': query})
 
 class PersonAutocomplete(autocomplete.Select2QuerySetView):
     def get_queryset(self):

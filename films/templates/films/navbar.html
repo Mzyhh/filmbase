@@ -17,6 +17,9 @@
         <li class="nav-item">
           <a class="nav-link {% if request.path|slice:':8' == '/genres/' %}active{% endif %}" href="{% url 'films:genre_list' %}">{{ 'films:genre'|model_verbose_name_plural }}</a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link {% if request.path|slice:':8' == '/posts/' %}active{% endif %}" href="{% url 'films:post_list' %}">{{ 'films:post'|model_verbose_name_plural }}</a>
+        </li>
       </ul>
       <div>
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
