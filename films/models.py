@@ -100,8 +100,11 @@ class Film(MyModel):
         return self.name
 
 class Post(MyModel):
-    title = models.CharField("Название", max_length=250)
+    name = models.CharField("Название", max_length=250)
     slug = models.SlugField(max_length=250)
+    icon = models.ImageField(
+        "Иконка", upload_to="post_images/", blank=True, null=True)
+
     class Meta:
         ordering = ["created_at"]
         verbose_name = "Новость"
@@ -114,9 +117,14 @@ class Comment(MyModel):
     body = models.TextField("Текст", null=True)
     post = models.ForeignKey(Post, on_delete=models.CASCADE,
                              related_name="films_post")
+    
+    class Meta:
+        ordering = ["created_at"]
+        verbose_name = "Комментарий"
+        verbose_name_plural = "Комментарии"
 
 class Section(MyModel):
-    title = models.CharField("Название", max_length=250)
+    name = models.CharField("Название", max_length=250)
     body = models.TextField("Текст", null=True)
     post = models.ForeignKey(Post,
                              on_delete=models.CASCADE)
@@ -126,3 +134,5 @@ class Section(MyModel):
 
     class Meta:
         ordering = ["position"]
+        verbose_name = "Секция"
+        verbose_name_plural = "Секции"
