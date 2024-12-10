@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 import datetime
+from django.conf import settings
 
 
 class MyModel(models.Model):
@@ -97,3 +98,31 @@ class Film(MyModel):
 
     def __str__(self):
         return self.name
+
+class Post(MyModel):
+    title = models.CharField("Название", max_length=250)
+    slug = models.SlugField(max_length=250)
+    class Meta:
+        ordering = ["created_at"]
+        verbose_name = "Новость"
+        verbose_name_plural = "Новости"
+    
+class Comment(MyModel):
+    author = models.ForeignKey(settings.AUTH_USER_MODEL,
+                               on_delete=models.CASCADE,
+                               related_name="post_author")
+    body = models.TextField("Текст", null=True)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE,
+                             related_name="films_post")
+
+class Section(MyModel):
+    title = models.CharField("Название", max_length=250)
+    body = models.TextField("Текст", null=True)
+    post = models.ForeignKey(Post,
+                             on_delete=models.CASCADE)
+    position = models.IntegerField("Позиция")
+    image = models.ImageField(
+        "Изображение", upload_to="post_images/", blank=True, null=True)
+
+    class Meta:
+        ordering = ["position"]
