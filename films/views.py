@@ -238,6 +238,12 @@ def post_list(request):
     return render(request, 'films/post/list.html', {'posts': posts,
                                                       'query': query})
 
+def post_detail(request, id):
+    queryset = Post.objects.all()
+    post = get_object_or_404(queryset, id=id)
+    return render(request, 'films/post/detail.html',
+                  {'post': post})
+
 class PersonAutocomplete(autocomplete.Select2QuerySetView):
     def get_queryset(self):
         people = Person.objects.all()

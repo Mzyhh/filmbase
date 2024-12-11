@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'films.apps.FilmsConfig',
     'django_extensions',
+    'markdown',
 ]
 
 MIDDLEWARE = [

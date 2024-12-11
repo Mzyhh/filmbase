@@ -2,6 +2,8 @@ from django.db import models
 from django.core.validators import MinValueValidator, MaxValueValidator
 import datetime
 from django.conf import settings
+import markdown
+from django.utils.safestring import mark_safe
 
 
 class MyModel(models.Model):
@@ -109,30 +111,50 @@ class Post(MyModel):
         ordering = ["created_at"]
         verbose_name = "Новость"
         verbose_name_plural = "Новости"
+
+    def __str__(self):
+        return self.name
     
 class Comment(MyModel):
     author = models.ForeignKey(settings.AUTH_USER_MODEL,
                                on_delete=models.CASCADE,
-                               related_name="post_author")
+                               related_name="comments")
     body = models.TextField("Текст", null=True)
     post = models.ForeignKey(Post, on_delete=models.CASCADE,
-                             related_name="films_post")
+                             related_name="comments")
     
     class Meta:
         ordering = ["created_at"]
         verbose_name = "Комментарий"
         verbose_name_plural = "Комментарии"
 
+    def __str__(self):
+        return self.name
+
 class Section(MyModel):
+    class ImageStatus(models.TextChoices):
+        LEFT = 'L', 'Left'
+        RIGHT = 'R', 'Right'
+        BEFORE_TITLE = 'BT', 'Top'
+        BOTTOM = 'B', 'Bottom'
+
     name = models.CharField("Название", max_length=250)
     body = models.TextField("Текст", null=True)
-    post = models.ForeignKey(Post,
-                             on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE,
+                             related_name="sections")
     position = models.IntegerField("Позиция")
     image = models.ImageField(
         "Изображение", upload_to="post_images/", blank=True, null=True)
+    image_status = models.CharField(max_length=2, choices=ImageStatus.choices,
+                                    default=ImageStatus.BEFORE_TITLE)
 
     class Meta:
         ordering = ["position"]
         verbose_name = "Секция"
         verbose_name_plural = "Секции"
+
+    def __str__(self):
+        return self.name
+    
+    def body_as_markdown(self):
+        return mark_safe(markdown.markdown(self.body))  

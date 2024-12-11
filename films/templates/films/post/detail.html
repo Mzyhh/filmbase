@@ -1,0 +1,30 @@
+{% extends 'films/base.html' %}
+{% load films_tags %}
+
+{% block breadcrumb %}
+  <nav>
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a href="{% url 'films:post_list' %}">{{ 'films:post'|model_verbose_name_plural }}</a>
+      </li>
+      <li class="breadcrumb-item active">{{ post.name }}</li>
+    </ol>
+  </nav>
+{% endblock %}
+
+{% block content %}
+  <h1>
+    {{ post.name }}
+  </h1>
+  {% for section in post.sections.all %}
+    {% if section.image and section.image_status == 'BT' %}
+    <img src="{{ section.image.url }}" class="section-image" alt="{{ section.name }}" />
+    {% endif %}
+    <h2> 
+      {{ section.name }}
+    </h2>
+    <div>
+      {{ section.body_as_markdown }}
+    </div>
+  {% endfor %}
+{% endblock %}
