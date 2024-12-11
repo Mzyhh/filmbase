@@ -1,0 +1,13 @@
+{% extends 'films/base.html' %}
+{% load films_tags %}
+
+{% block content %}
+  <h1>
+    {{ 'films:post'|model_verbose_name_plural }}
+    <!-- {% if user.is_superuser %}
+      <a href="{% url 'films:film_create' %}" title="Добавить фильм" class="btn btn-primary"><i class="bi-plus-lg"></i></a>
+    {% endif %} -->
+  </h1>
+  {% include 'films/post/search.html' %}
+  {% include 'films/posts.html' %}
+{% endblock %}

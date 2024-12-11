@@ -1,0 +1,9 @@
+<div class="row h-50">
+    {% if post.icon %}
+      <img src="{{ post.icon.url }}" alt="{{ post.name }}" />
+    {% endif %}
+    <div class="card-body">
+      <h5 class="card-title">{{ post.name }}</h5>
+    </div>
+  </div>
+  

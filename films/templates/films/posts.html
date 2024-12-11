@@ -1,0 +1,16 @@
+{% load django_bootstrap5 %}
+
+{% if posts %}
+    <div class="row">
+      {% for post in posts %}
+        <div class="col-md-3 py-2">
+          {% include "films/post.html" with post=post %}
+        </div>
+      {% endfor %}
+    </div>
+    <div class="my-4">
+      {% bootstrap_pagination posts %}
+    </div>    
+  {% else %}
+    <div class="alert alert-info">Новости не найдены</div>
+{% endif %}
