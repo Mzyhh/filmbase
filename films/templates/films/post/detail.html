@@ -13,18 +13,47 @@
 {% endblock %}
 
 {% block content %}
+  {% if user.is_superuser %}
+    <div class="d-grid gap-2 my-4">
+      <a href="{% url 'films:post_update' post.id %}" class="btn btn-primary btn-block">
+        <i class="bi-pencil-square"></i>
+        Редактировать
+      </a>
+      <a href="{% url 'films:post_delete' post.id %}" class="btn btn-danger btn-block">
+        <i class="bi-trash"></i>
+        Удалить
+      </a>
+    </div>
+  {% endif %}
   <h1>
     {{ post.name }}
   </h1>
   {% for section in post.sections.all %}
+  <div class="px-2">
     {% if section.image and section.image_status == 'BT' %}
-    <img src="{{ section.image.url }}" class="section-image" alt="{{ section.name }}" />
+    <img src="{{ section.image.url }}" class="rounded img-fluid" alt="{{ section.name }}" />
     {% endif %}
-    <h2> 
-      {{ section.name }}
-    </h2>
+
+    {% if section.image and section.image_status == 'L' %}
+    <img src="{{ section.image.url }}" class="rounded float-start img-fluid" alt="{{ section.name }}" />
+    {% endif %}
+
+    {% if section.image and section.image_status == 'R' %}
+    <img src="{{ section.image.url }}" class="rounded float-end img-fluid" alt="{{ section.name }}" />
+    {% endif %}
+
+    <p class="large rise">{{ section.name }}</p>
+
+    {% if section.image and section.image_status == 'AT' %}
+    <img src="{{ section.image.url }}" class="rounded img-fluid" alt="{{ section.name }}" />
+    {% endif %}
+
     <div>
       {{ section.body_as_markdown }}
     </div>
+    {% if section.image and section.image_status == 'B' %}
+    <img src="{{ section.image.url }}" class="rounded img-fluid" alt="{{ section.name }}" />
+    {% endif %}
+  </div>
   {% endfor %}
 {% endblock %}

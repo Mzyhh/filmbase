@@ -1,0 +1,29 @@
+{% extends 'films/base.html' %}
+{% load films_tags %}
+{% load django_bootstrap5 %}
+
+{% block breadcrumb %}
+  <nav>
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item">
+        <a href="{% url 'films:film_list' %}">{{ 'films:post'|model_verbose_name_plural }}</a>
+      </li>
+      <li class="breadcrumb-item">
+        <a href="{% url 'films:post_detail' post.id %}">{{ film.name }}</a>
+      </li>
+      <li class="breadcrumb-item active">Удаление</li>
+    </ol>
+    {% endblock %}
+</nav>
+
+{% block content %}
+  <div class="alert alert-danger">
+    <h4 class="alert-heading">Вы уверены?</h4>
+    <p>Вы уверены, что хотите безвозвратно удалить пост «{{ post.name }}»?</p>
+    <form method="POST">
+      {% csrf_token %}
+      {% bootstrap_button 'Да, удалить!' button_type='submit' button_class='btn-primary' %}
+      <a href="{% url 'films:post_detail' post.id %}" class="btn btn-light ms-4">Нет</a>
+    </form>
+  </div>
+{% endblock %}

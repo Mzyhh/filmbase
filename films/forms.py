@@ -1,6 +1,6 @@
 from django import forms
 from dal import autocomplete
-from .models import Country, Genre, Film, Person
+from .models import Country, Genre, Film, Person, Post, Comment, Section
 
 
 class CountryForm(forms.ModelForm):
@@ -39,3 +39,19 @@ class PersonForm(forms.ModelForm):
             "birthday": forms.DateInput(attrs={'type': 'date'},
                                         format="%Y-%m-%d")
         }
+
+class PostForm(forms.ModelForm):
+    def __init__(self, **kwargs):
+        self.author = kwargs.pop('author', None)
+        super(PostForm, self).__init__(**kwargs)
+    
+    def save(self, commit=True):
+        obj = super(PostForm, self).save(commit=False)
+        obj.author = self.author
+        if commit:
+            obj.save()
+        return obj
+
+    class Meta:
+        model = Post
+        fields = ['name', 'icon']

@@ -106,6 +106,9 @@ class Post(MyModel):
     slug = models.SlugField(max_length=250)
     icon = models.ImageField(
         "Иконка", upload_to="post_images/", blank=True, null=True)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL,
+                               on_delete=models.CASCADE,
+                               related_name="posts")
 
     class Meta:
         ordering = ["created_at"]
@@ -135,7 +138,8 @@ class Section(MyModel):
     class ImageStatus(models.TextChoices):
         LEFT = 'L', 'Left'
         RIGHT = 'R', 'Right'
-        BEFORE_TITLE = 'BT', 'Top'
+        BEFORE_TITLE = 'BT', 'Before title'
+        AFTER_TITLE = "AT", 'After title'
         BOTTOM = 'B', 'Bottom'
 
     name = models.CharField("Название", max_length=250)

@@ -2,7 +2,7 @@ from dal import autocomplete
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.decorators import user_passes_test
 from .models import Country, Film, Genre, Person, Post, Section
-from .forms import CountryForm, GenreForm, FilmForm, PersonForm
+from .forms import CountryForm, GenreForm, FilmForm, PersonForm, PostForm
 from .helpers import paginate
 from django.contrib import messages
 
@@ -233,7 +233,7 @@ def post_list(request):
     posts = Post.objects.all()
     query = request.GET.get('query', '')
     if query:
-        posts = posts.filter(title__icontains=query)
+        posts = posts.filter(name__icontains=query)
     posts = paginate(request, posts)
     return render(request, 'films/post/list.html', {'posts': posts,
                                                       'query': query})
@@ -243,6 +243,43 @@ def post_detail(request, id):
     post = get_object_or_404(queryset, id=id)
     return render(request, 'films/post/detail.html',
                   {'post': post})
+
+@user_passes_test(check_admin)
+def post_update(request, id):
+    post = get_object_or_404(Post, id=id)
+    # if request.method == 'POST':
+    #     form = FilmForm(request.POST, request.FILES, instance=film)
+    #     if form.is_valid():
+    #         form.save()
+    #         messages.success(request, 'Фильм изменён')
+    #         return redirect('films:film_detail', id=film.id)
+    # else:
+    #     form = FilmForm(instance=film)
+    # return render(request, 'films/film/update.html',
+    #               {'form': form})
+
+def post_create(request):
+    if request.method == 'POST':
+        form = PostForm(author=request.user, data=request.POST, files=request.FILES)
+        if form.is_valid():
+            post = form.save()
+            messages.success(request, 'Новость добавлена')
+            return redirect('films:post_detail', id=post.id)
+    else:
+        form = PostForm()
+    return render(request, 'films/post/create.html', {'form': form})
+
+@user_passes_test(check_admin)
+def post_delete(request, id):
+    post = get_object_or_404(Post, id=id)
+    if request.method == 'POST':
+        for section in post.sections.all():
+            section.delete()
+        post.delete()
+        messages.success(request, 'Пост удалён')
+        return redirect('films:post_list')
+    return render(request, 'films/post/delete.html',
+                 {'post': post})
 
 class PersonAutocomplete(autocomplete.Select2QuerySetView):
     def get_queryset(self):
