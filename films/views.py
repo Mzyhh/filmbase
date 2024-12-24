@@ -2,13 +2,15 @@ from dal import autocomplete
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.decorators import user_passes_test
 from .models import Country, Film, Genre, Person, Post, Section
-from .forms import CountryForm, GenreForm, FilmForm, PersonForm, PostForm
+from .forms import CountryForm, GenreForm, FilmForm, PersonForm, PostForm, CreateSectionFormSet, UpdateSectionFormSet
 from .helpers import paginate
 from django.contrib import messages
 
-
 def check_admin(user):
     return user.is_superuser
+
+def check_authenticity(user):
+    return user.is_authenticated
 
 
 def country_list(request):
@@ -244,34 +246,49 @@ def post_detail(request, id):
     return render(request, 'films/post/detail.html',
                   {'post': post})
 
-@user_passes_test(check_admin)
+@user_passes_test(check_authenticity)
 def post_update(request, id):
     post = get_object_or_404(Post, id=id)
-    # if request.method == 'POST':
-    #     form = FilmForm(request.POST, request.FILES, instance=film)
-    #     if form.is_valid():
-    #         form.save()
-    #         messages.success(request, 'Фильм изменён')
-    #         return redirect('films:film_detail', id=film.id)
-    # else:
-    #     form = FilmForm(instance=film)
-    # return render(request, 'films/film/update.html',
-    #               {'form': form})
+    if post.author != request.user:
+        messages.warning(request, 'Вы не можете редактировать пост чужого авторства')
+        return redirect('films:post_detail', id=post.id)
+    if request.method == 'POST':
+        form = PostForm(request.POST, request.FILES, instance=post, author=post.author)
+        formset = UpdateSectionFormSet(request.POST, request.FILES, instance=post)
+        if form.is_valid() and formset.is_valid():
+            form.save()
+            formset.save()
+            messages.success(request, 'Новость изменена')
+            return redirect('films:post_detail', id=post.id)
+    else:
+        form = PostForm(instance=post, author=post.author)
+        formset = UpdateSectionFormSet(instance=post)
+    return render(request, 'films/post/update.html', 
+                  {'form': form, 'formset' : formset})
 
+@user_passes_test(check_authenticity)
 def post_create(request):
     if request.method == 'POST':
         form = PostForm(author=request.user, data=request.POST, files=request.FILES)
         if form.is_valid():
             post = form.save()
-            messages.success(request, 'Новость добавлена')
-            return redirect('films:post_detail', id=post.id)
+            formset = CreateSectionFormSet(request.POST, request.FILES, instance=post)
+            if formset.is_valid():
+                formset.save()
+                messages.success(request, 'Новость добавлена')
+                return redirect('films:post_detail', id=post.id)
     else:
         form = PostForm()
-    return render(request, 'films/post/create.html', {'form': form})
+        formset = CreateSectionFormSet()
+    return render(request, 'films/post/create.html', 
+                  {'form': form, 'formset' : formset})
 
-@user_passes_test(check_admin)
+@user_passes_test(check_authenticity)
 def post_delete(request, id):
     post = get_object_or_404(Post, id=id)
+    if post.author != request.user:
+        messages.warning(request, 'Вы не можете удалить пост чужого авторства')
+        return redirect('films:post_detail', id=post.id)
     if request.method == 'POST':
         for section in post.sections.all():
             section.delete()

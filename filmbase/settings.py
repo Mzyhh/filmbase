@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     'films.apps.FilmsConfig',
     'django_extensions',
     'markdown',
+    'jquery',
+    'djangoformsetjs',
 ]
 
 MIDDLEWARE = [

@@ -146,7 +146,7 @@ class Section(MyModel):
     body = models.TextField("Текст", null=True)
     post = models.ForeignKey(Post, on_delete=models.CASCADE,
                              related_name="sections")
-    position = models.IntegerField("Позиция")
+    position = models.IntegerField("Позиция", default=0)
     image = models.ImageField(
         "Изображение", upload_to="post_images/", blank=True, null=True)
     image_status = models.CharField(max_length=2, choices=ImageStatus.choices,

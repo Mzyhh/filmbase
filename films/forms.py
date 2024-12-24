@@ -41,9 +41,9 @@ class PersonForm(forms.ModelForm):
         }
 
 class PostForm(forms.ModelForm):
-    def __init__(self, **kwargs):
+    def __init__(self, *args, **kwargs):
         self.author = kwargs.pop('author', None)
-        super(PostForm, self).__init__(**kwargs)
+        super(PostForm, self).__init__(*args, **kwargs)
     
     def save(self, commit=True):
         obj = super(PostForm, self).save(commit=False)
@@ -55,3 +55,21 @@ class PostForm(forms.ModelForm):
     class Meta:
         model = Post
         fields = ['name', 'icon']
+
+CreateSectionFormSet = forms.inlineformset_factory(
+    Post,
+    Section,
+    fields=('name', 'body', 'image', 'image_status', 'position'),
+    extra=1,
+    can_delete=False,
+    max_num=None,
+)
+
+UpdateSectionFormSet = forms.inlineformset_factory(
+    Post,
+    Section,
+    fields=('name', 'body', 'image', 'image_status', 'position'),
+    extra=0,
+    can_delete=True,
+    max_num=None,
+)

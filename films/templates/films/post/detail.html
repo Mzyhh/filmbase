@@ -13,13 +13,13 @@
 {% endblock %}
 
 {% block content %}
-  {% if user.is_superuser %}
-    <div class="d-grid gap-2 my-4">
-      <a href="{% url 'films:post_update' post.id %}" class="btn btn-primary btn-block">
+  {% if user.is_authenticated and user == post.author %}
+    <div class="gap-2 my-4">
+      <a href="{% url 'films:post_update' post.id %}" class="btn btn-primary btn-sm">
         <i class="bi-pencil-square"></i>
         Редактировать
       </a>
-      <a href="{% url 'films:post_delete' post.id %}" class="btn btn-danger btn-block">
+      <a href="{% url 'films:post_delete' post.id %}" class="btn btn-danger btn-sm">
         <i class="bi-trash"></i>
         Удалить
       </a>
