@@ -121,7 +121,7 @@ class Post(MyModel):
 class Comment(MyModel):
     author = models.ForeignKey(settings.AUTH_USER_MODEL,
                                on_delete=models.CASCADE,
-                               related_name="comments")
+                               related_name="a_comments")
     body = models.TextField("Текст", null=True)
     post = models.ForeignKey(Post, on_delete=models.CASCADE,
                              related_name="comments")
@@ -132,7 +132,7 @@ class Comment(MyModel):
         verbose_name_plural = "Комментарии"
 
     def __str__(self):
-        return self.name
+        return f"{self.author} on {self.post.name}"
 
 class Section(MyModel):
     class ImageStatus(models.TextChoices):

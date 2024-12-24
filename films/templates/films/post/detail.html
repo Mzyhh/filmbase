@@ -13,7 +13,7 @@
 {% endblock %}
 
 {% block content %}
-  {% if user.is_authenticated and user == post.author %}
+  {% if user.is_superuser or user == post.author %}
     <div class="gap-2 my-4">
       <a href="{% url 'films:post_update' post.id %}" class="btn btn-primary btn-sm">
         <i class="bi-pencil-square"></i>
@@ -25,9 +25,11 @@
       </a>
     </div>
   {% endif %}
-  <h1>
-    {{ post.name }}
-  </h1>
+  <div class="d-flex align-items-end flex-row bd-highlight mb-3">
+    <div class="fs-1 p-2 bd-highlight">{{ post.author.username }}</div>
+      <div class="vr" style="width: 3px; height: 70px;"></div>
+    <div class="fs-1 p-2 bd-highlight">{{ post.name }}</div>
+  </div>
   {% for section in post.sections.all %}
   <div class="px-2">
     {% if section.image and section.image_status == 'BT' %}
@@ -55,5 +57,10 @@
     <img src="{{ section.image.url }}" class="rounded img-fluid" alt="{{ section.name }}" />
     {% endif %}
   </div>
+  {% endfor %}
+  {% for comment in post.comments.all %}
+    <div class="comment">
+    {{ comment.body }}
+    </div>
   {% endfor %}
 {% endblock %}

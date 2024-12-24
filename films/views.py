@@ -1,7 +1,7 @@
 from dal import autocomplete
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.decorators import user_passes_test
-from .models import Country, Film, Genre, Person, Post, Section
+from .models import Country, Film, Genre, Person, Post, Section, Comment
 from .forms import CountryForm, GenreForm, FilmForm, PersonForm, PostForm, CreateSectionFormSet, UpdateSectionFormSet
 from .helpers import paginate
 from django.contrib import messages
@@ -249,7 +249,7 @@ def post_detail(request, id):
 @user_passes_test(check_authenticity)
 def post_update(request, id):
     post = get_object_or_404(Post, id=id)
-    if post.author != request.user:
+    if not request.user.is_superuser and post.author != request.user:
         messages.warning(request, 'Вы не можете редактировать пост чужого авторства')
         return redirect('films:post_detail', id=post.id)
     if request.method == 'POST':
@@ -286,7 +286,7 @@ def post_create(request):
 @user_passes_test(check_authenticity)
 def post_delete(request, id):
     post = get_object_or_404(Post, id=id)
-    if post.author != request.user:
+    if not request.user.is_superuser and post.author != request.user:
         messages.warning(request, 'Вы не можете удалить пост чужого авторства')
         return redirect('films:post_detail', id=post.id)
     if request.method == 'POST':
