@@ -73,3 +73,28 @@ UpdateSectionFormSet = forms.inlineformset_factory(
     can_delete=True,
     max_num=None,
 )
+
+class CommentForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.author = kwargs.pop('author', None)
+        self.post = kwargs.pop('post', None)
+        super(CommentForm, self).__init__(*args, **kwargs)
+    
+    def save(self, commit=True):
+        obj = super(CommentForm, self).save(commit=False)
+        obj.author = self.author
+        obj.post = self.post
+        if commit:
+            obj.save()
+        return obj
+
+    class Meta:
+        model = Comment
+        fields = ['body']
+
+        widgets = {
+            'body': forms.TextInput(attrs={'placeholder': 'Напишите комментарий...'}),
+        }
+        labels = {
+            'body': "",
+        }

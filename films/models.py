@@ -127,7 +127,7 @@ class Comment(MyModel):
                              related_name="comments")
     
     class Meta:
-        ordering = ["created_at"]
+        ordering = ["-created_at"]
         verbose_name = "Комментарий"
         verbose_name_plural = "Комментарии"
 

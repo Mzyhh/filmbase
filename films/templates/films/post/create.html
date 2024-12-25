@@ -38,7 +38,7 @@
   <h1>Добавление новости</h1>
   <form method="POST" enctype="multipart/form-data" onsubmit="updatePositions()">
     {% csrf_token %}
-    {% bootstrap_form form%}
+    {% bootstrap_form form%} 
     {{ form.media }}
     {{ formset.management_form }}
 

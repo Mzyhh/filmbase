@@ -2,7 +2,7 @@ from dal import autocomplete
 from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.decorators import user_passes_test
 from .models import Country, Film, Genre, Person, Post, Section, Comment
-from .forms import CountryForm, GenreForm, FilmForm, PersonForm, PostForm, CreateSectionFormSet, UpdateSectionFormSet
+from .forms import CountryForm, GenreForm, FilmForm, PersonForm, PostForm, CreateSectionFormSet, UpdateSectionFormSet, CommentForm
 from .helpers import paginate
 from django.contrib import messages
 
@@ -243,8 +243,14 @@ def post_list(request):
 def post_detail(request, id):
     queryset = Post.objects.all()
     post = get_object_or_404(queryset, id=id)
+    if request.method == 'POST':
+        form = CommentForm(request.POST, request.FILES, author=request.user, post=post)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Комментарий добавлен')
+    form = CommentForm()
     return render(request, 'films/post/detail.html',
-                  {'post': post})
+                  {'post': post, 'form':form})
 
 @user_passes_test(check_authenticity)
 def post_update(request, id):
@@ -290,13 +296,32 @@ def post_delete(request, id):
         messages.warning(request, 'Вы не можете удалить пост чужого авторства')
         return redirect('films:post_detail', id=post.id)
     if request.method == 'POST':
-        for section in post.sections.all():
-            section.delete()
         post.delete()
         messages.success(request, 'Пост удалён')
         return redirect('films:post_list')
     return render(request, 'films/post/delete.html',
                  {'post': post})
+
+# @user_passes_test(check_authenticity)
+# def comment_create(request, post_id):
+#     post = get_object_or_404(Post, id=post_id)
+#     if request.method == 'POST':
+#         pass
+#     else:
+#         form = CommentForm()
+#     return render(request, 'films/post/detail.html',
+#                   {'form': form, 'post': post})
+
+@user_passes_test(check_admin)
+def comment_delete(request, id):
+    comment = get_object_or_404(Comment, id=id)
+    post = get_object_or_404(Post, id=comment.post.id)
+    if request.method == 'POST':
+        comment.delete()
+        messages.success(request, 'Комментарий удалён')
+    form = CommentForm()
+    return render(request, 'films/post/detail.html',
+                  {'post' : post, 'form' : form})
 
 class PersonAutocomplete(autocomplete.Select2QuerySetView):
     def get_queryset(self):

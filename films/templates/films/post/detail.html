@@ -1,4 +1,5 @@
 {% extends 'films/base.html' %}
+{% load django_bootstrap5 %}
 {% load films_tags %}
 
 {% block breadcrumb %}
@@ -58,9 +59,32 @@
     {% endif %}
   </div>
   {% endfor %}
-  {% for comment in post.comments.all %}
-    <div class="comment">
-    {{ comment.body }}
+
+  <div class="row d-flex col-md-8 col-lg-6 card shadow-0 border card-body p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h4 class="text-body mb-0">{{ 'films:comment'|model_verbose_name_plural }} ({{ post.comments.count }})</h4>
     </div>
-  {% endfor %}
+    {% if user.is_authenticated %}
+      <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+      </form>
+    {% endif %}
+    {% for comment in post.comments.all %}
+    <div class="card mb-4">
+      <div class="card-body">
+        <p>{{ comment.body }}</p>
+        <div class="d-flex justify-content-between">
+          <div class="d-flex flex-row align-items-center">
+            <p class="small mb-0 ms-2"> {{ comment.author.username }} </p>
+          </div>
+          <div class="d-flex flex-row align-items-center">
+            <p class="small text-muted mb-0">{{ comment.created_at }}</p>
+            <i class="far fa-thumbs-up mx-2 fa-xs text-body" style="margin-top: -0.16rem;"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
 {% endblock %}
