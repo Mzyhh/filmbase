@@ -302,26 +302,37 @@ def post_delete(request, id):
     return render(request, 'films/post/delete.html',
                  {'post': post})
 
-# @user_passes_test(check_authenticity)
-# def comment_create(request, post_id):
-#     post = get_object_or_404(Post, id=post_id)
-#     if request.method == 'POST':
-#         pass
-#     else:
-#         form = CommentForm()
-#     return render(request, 'films/post/detail.html',
-#                   {'form': form, 'post': post})
+@user_passes_test(check_authenticity)
+def comment_update(request, post_id, comment_id):
+    comment = get_object_or_404(Comment, id=comment_id)
+    if not request.user.is_superuser and comment.author != request.user:
+        messages.warning(request, 'Вы не можете редактировать чужой комментарий')
+        return redirect('films:post_detail', id=post_id)
+    if request.method == 'POST':
+        form = CommentForm(request.POST, request.FILES, instance=comment,
+                           author=comment.author, post=comment.post)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Комментарий изменен')
+            return redirect('films:post_detail', id=post_id)
+    else:
+        form = CommentForm(instance=comment)
+    return render(request, 'films/comment/update.html',
+                  {'form': form}) 
 
-@user_passes_test(check_admin)
-def comment_delete(request, id):
-    comment = get_object_or_404(Comment, id=id)
-    post = get_object_or_404(Post, id=comment.post.id)
+@user_passes_test(check_authenticity)
+def comment_delete(request, post_id, comment_id):
+    comment = get_object_or_404(Comment, id=comment_id)
+    if not request.user.is_superuser and comment.author != request.user:
+        messages.warning(request, 'Вы не можете удалить комментарий чужого авторства')
+        return redirect('films:post_detail', id=post_id)
     if request.method == 'POST':
         comment.delete()
         messages.success(request, 'Комментарий удалён')
-    form = CommentForm()
-    return render(request, 'films/post/detail.html',
-                  {'post' : post, 'form' : form})
+        return redirect('films:post_detail', id=post_id)
+    return render(request, 'films/comment/delete.html',
+                 {'comment': comment, 'post': comment.post})
+
 
 class PersonAutocomplete(autocomplete.Select2QuerySetView):
     def get_queryset(self):

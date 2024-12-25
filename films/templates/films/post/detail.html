@@ -5,7 +5,7 @@
 {% block breadcrumb %}
   <nav>
     <ol class="breadcrumb">
-      <li class="breadcrumb-item">
+      <li class="breadcrumb-item text-break">
         <a href="{% url 'films:post_list' %}">{{ 'films:post'|model_verbose_name_plural }}</a>
       </li>
       <li class="breadcrumb-item active">{{ post.name }}</li>
@@ -29,33 +29,33 @@
   <div class="d-flex align-items-end flex-row bd-highlight mb-3">
     <div class="fs-1 p-2 bd-highlight">{{ post.author.username }}</div>
       <div class="vr" style="width: 3px; height: 70px;"></div>
-    <div class="fs-1 p-2 bd-highlight">{{ post.name }}</div>
+    <div class="fs-1 p-2 bd-highlight text-break">{{ post.name }}</div>
   </div>
   {% for section in post.sections.all %}
   <div class="px-2">
     {% if section.image and section.image_status == 'BT' %}
-    <img src="{{ section.image.url }}" class="rounded img-fluid" alt="{{ section.name }}" />
+    <img src="{{ section.image.url }}" class="rounded img-fluid me-4" alt="{{ section.name }}" />
     {% endif %}
 
     {% if section.image and section.image_status == 'L' %}
-    <img src="{{ section.image.url }}" class="rounded float-start img-fluid" alt="{{ section.name }}" />
+    <img src="{{ section.image.url }}" class="rounded float-start img-fluid text-break me-4" alt="{{ section.name }}" />
     {% endif %}
 
     {% if section.image and section.image_status == 'R' %}
-    <img src="{{ section.image.url }}" class="rounded float-end img-fluid" alt="{{ section.name }}" />
+    <img src="{{ section.image.url }}" class="rounded float-end img-fluid me-4" alt="{{ section.name }}" />
     {% endif %}
 
-    <p class="large rise">{{ section.name }}</p>
+    <p class="large rise text-break">{{ section.name }}</p>
 
     {% if section.image and section.image_status == 'AT' %}
-    <img src="{{ section.image.url }}" class="rounded img-fluid" alt="{{ section.name }}" />
+    <img src="{{ section.image.url }}" class="rounded img-fluid me-4" alt="{{ section.name }}" />
     {% endif %}
 
-    <div>
+    <div class="text-break">
       {{ section.body_as_markdown }}
     </div>
     {% if section.image and section.image_status == 'B' %}
-    <img src="{{ section.image.url }}" class="rounded img-fluid" alt="{{ section.name }}" />
+    <img src="{{ section.image.url }}" class="rounded img-fluid me-4" alt="{{ section.name }}" />
     {% endif %}
   </div>
   {% endfor %}
@@ -78,6 +78,14 @@
           <div class="d-flex flex-row align-items-center">
             <p class="small mb-0 ms-2"> {{ comment.author.username }} </p>
           </div>
+          {% if comment.author == user or user.is_superuser %}
+            <div class="d-flex flex-row align-items-center">
+              <a href="{% url 'films:comment_update' post.id comment.id %}" class="small mb-0 ms-2"> Изменить </a>
+            </div>
+            <div class="d-flex flex-row align-items-center">
+              <a href="{% url 'films:comment_delete' post.id comment.id %}" class="small mb-0 ms-2"> Удалить </a>
+            </div>
+          {% endif %}
           <div class="d-flex flex-row align-items-center">
             <p class="small text-muted mb-0">{{ comment.created_at }}</p>
             <i class="far fa-thumbs-up mx-2 fa-xs text-body" style="margin-top: -0.16rem;"></i>

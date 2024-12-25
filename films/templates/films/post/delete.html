@@ -6,10 +6,10 @@
   <nav>
     <ol class="breadcrumb">
       <li class="breadcrumb-item">
-        <a href="{% url 'films:film_list' %}">{{ 'films:post'|model_verbose_name_plural }}</a>
+        <a href="{% url 'films:post_list' %}">{{ 'films:post'|model_verbose_name_plural }}</a>
       </li>
       <li class="breadcrumb-item">
-        <a href="{% url 'films:post_detail' post.id %}">{{ film.name }}</a>
+        <a href="{% url 'films:post_detail' post.id %}">{{ post.name }}</a>
       </li>
       <li class="breadcrumb-item active">Удаление</li>
     </ol>
